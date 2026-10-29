@@ -1,0 +1,244 @@
+@{
+    ViewData["Title"] = "System Architecture & Engineering Guide";
+}
+
+<div class="mb-4">
+    <div class="d-flex justify-content-between align-items-center">
+        <div>
+            <h3 class="fw-bold text-dark mb-0">System Architecture & Engineering Reference</h3>
+            <p class="text-muted small mb-0">Complete technical reference manual for ApexCMMS enterprise architecture</p>
+        </div>
+        <a asp-action="Index" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left me-1"></i> Back to Dashboard
+        </a>
+    </div>
+</div>
+
+<!-- Navigation Tabs -->
+<ul class="nav nav-pills mb-4 gap-2" id="archTabs" role="tablist">
+    <li class="nav-item">
+        <button class="nav-link active fw-semibold" id="clean-arch-tab" data-bs-toggle="pill" data-bs-target="#clean-arch">
+            <i class="bi bi-diagram-3 me-1"></i> 1. Clean Architecture
+        </button>
+    </li>
+    <li class="nav-item">
+        <button class="nav-link fw-semibold" id="security-tab" data-bs-toggle="pill" data-bs-target="#security">
+            <i class="bi bi-shield-lock me-1"></i> 2. Hybrid Auth & JWT
+        </button>
+    </li>
+    <li class="nav-item">
+        <button class="nav-link fw-semibold" id="rbac-tab" data-bs-toggle="pill" data-bs-target="#rbac">
+            <i class="bi bi-people me-1"></i> 3. RBAC & Policies
+        </button>
+    </li>
+    <li class="nav-item">
+        <button class="nav-link fw-semibold" id="state-tab" data-bs-toggle="pill" data-bs-target="#state">
+            <i class="bi bi-magic me-1"></i> 4. State & Session Wizard
+        </button>
+    </li>
+    <li class="nav-item">
+        <button class="nav-link fw-semibold" id="db-tab" data-bs-toggle="pill" data-bs-target="#db">
+            <i class="bi bi-database me-1"></i> 5. Database & Procedures
+        </button>
+    </li>
+    <li class="nav-item">
+        <button class="nav-link fw-semibold" id="resume-tab" data-bs-toggle="pill" data-bs-target="#resume">
+            <i class="bi bi-file-earmark-person me-1"></i> 6. Resume Highlights
+        </button>
+    </li>
+</ul>
+
+<div class="tab-content" id="archTabsContent">
+    <!-- 1. Clean Architecture Tab -->
+    <div class="tab-pane fade show active" id="clean-arch">
+        <div class="card p-4">
+            <h5 class="fw-bold text-dark border-bottom pb-2">Clean Architecture (Onion Pattern)</h5>
+            <p class="text-muted">
+                ApexCMMS separates concerns across four independent projects to ensure testability, maintainability, and zero domain pollution:
+            </p>
+
+            <div class="row g-3 mt-1">
+                <div class="col-md-6">
+                    <div class="card h-100 p-3 bg-light border-start border-primary border-4">
+                        <h6 class="fw-bold text-primary mb-1">ApexCMMS.Domain</h6>
+                        <p class="small text-muted mb-2">The enterprise core with zero external framework dependencies.</p>
+                        <ul class="small mb-0">
+                            <li><strong>Entities:</strong> <code>Asset</code>, <code>WorkOrder</code>, <code>SparePart</code>, <code>Department</code>, <code>AuditLog</code>, <code>ApplicationUser</code></li>
+                            <li><strong>Enums:</strong> <code>AssetStatus</code>, <code>AssetCriticality</code>, <code>WorkOrderPriority</code>, <code>WorkOrderStatus</code></li>
+                            <li><strong>Contracts:</strong> <code>BaseEntity</code>, <code>IAuditableEntity</code></li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="card h-100 p-3 bg-light border-start border-info border-4">
+                        <h6 class="fw-bold text-info mb-1">ApexCMMS.Application</h6>
+                        <p class="small text-muted mb-2">Use cases, DTOs, and interface abstractions.</p>
+                        <ul class="small mb-0">
+                            <li><strong>DTOs:</strong> Auth requests, Asset filters, Work order details, Inspection wizard state</li>
+                            <li><strong>Interfaces:</strong> <code>IApplicationDbContext</code>, <code>ICurrentUserService</code>, <code>IJwtTokenService</code></li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="card h-100 p-3 bg-light border-start border-warning border-4">
+                        <h6 class="fw-bold text-warning mb-1">ApexCMMS.Infrastructure</h6>
+                        <p class="small text-muted mb-2">Data persistence, external protocols, and security implementations.</p>
+                        <ul class="small mb-0">
+                            <li><strong>EF Core:</strong> <code>ApplicationDbContext</code> configured with <code>Projects</code> schema</li>
+                            <li><strong>Automated Auditing:</strong> ChangeTracker interceptor capturing JSON property diffs</li>
+                            <li><strong>JWT Engine:</strong> <code>JwtTokenService</code> with cryptographic token rotation</li>
+                            <li><strong>Seeder:</strong> <code>DbInitializer</code> generating departments, roles, users, and telemetry</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="card h-100 p-3 bg-light border-start border-success border-4">
+                        <h6 class="fw-bold text-success mb-1">ApexCMMS.Web</h6>
+                        <p class="small text-muted mb-2">Presentation boundary for human browsers and field mobile apps.</p>
+                        <ul class="small mb-0">
+                            <li><strong>MVC Controllers:</strong> Razor view rendering, Anti-CSRF verification</li>
+                            <li><strong>REST APIs:</strong> <code>AuthController</code>, <code>TechnicianApiController</code></li>
+                            <li><strong>Session State:</strong> Distributed memory cache for multi-step inspection forms</li>
+                            <li><strong>Middleware:</strong> <code>SecurityHeadersMiddleware</code> (Anti-clickjacking, CSP, XSS)</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 2. Hybrid Auth Tab -->
+    <div class="tab-pane fade" id="security">
+        <div class="card p-4">
+            <h5 class="fw-bold text-dark border-bottom pb-2">Dual-Authentication Security Engine</h5>
+            <p class="text-muted">
+                ApexCMMS provides both <strong>Cookie Authentication</strong> for desktop management portals and <strong>JWT Bearer Authentication</strong> for field mobile workers:
+            </p>
+
+            <div class="row g-4 mt-1">
+                <div class="col-md-6">
+                    <h6 class="fw-bold text-primary"><i class="bi bi-browser-chrome me-1"></i> Web UI: Secure Cookie Session</h6>
+                    <ul class="small text-muted">
+                        <li><strong>HttpOnly:</strong> Cookies are inaccessible via client-side JavaScript, preventing XSS session hijacking.</li>
+                        <li><strong>SameSite=Lax:</strong> Strict isolation preventing Cross-Site Request Forgery (CSRF).</li>
+                        <li><strong>Anti-Forgery Tokens:</strong> Automatic validation on all mutating POST/PUT/DELETE actions.</li>
+                        <li><strong>Sliding Expiration:</strong> Renews active user sessions after 8 hours of activity.</li>
+                    </ul>
+                </div>
+
+                <div class="col-md-6">
+                    <h6 class="fw-bold text-success"><i class="bi bi-phone me-1"></i> Mobile API: JWT Bearer & Refresh Token Rotation</h6>
+                    <ul class="small text-muted">
+                        <li><strong>HMAC-SHA256:</strong> Cryptographically signed JSON Web Tokens carrying <code>sub</code>, <code>role</code>, and <code>DepartmentId</code>.</li>
+                        <li><strong>Short-lived Access Tokens:</strong> 60-minute lifetime reduces exposure window.</li>
+                        <li><strong>Refresh Token Rotation:</strong> Every token exchange revokes the previous token and issues a new pair.</li>
+                        <li><strong>Replay Attack Defense:</strong> If a revoked token is reused, the entire token family is immediately revoked.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 3. RBAC Tab -->
+    <div class="tab-pane fade" id="rbac">
+        <div class="card p-4">
+            <h5 class="fw-bold text-dark border-bottom pb-2">Role-Based Access Control & Department Isolation</h5>
+            <div class="table-responsive mt-3">
+                <table class="table table-bordered table-sm small align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Capability</th>
+                            <th>SuperAdmin</th>
+                            <th>OperationsManager</th>
+                            <th>FieldTechnician</th>
+                            <th>SafetyAuditor</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>Command Center Dashboard</td><td><span class="badge bg-success">Yes</span></td><td><span class="badge bg-success">Yes</span></td><td><span class="badge bg-success">Yes</span></td><td><span class="badge bg-success">Yes</span></td></tr>
+                        <tr><td>Equipment Registry Access</td><td><span class="badge bg-primary">Global</span></td><td><span class="badge bg-info text-dark">Department Match</span></td><td><span class="badge bg-info text-dark">Department Match</span></td><td><span class="badge bg-secondary">Read-Only</span></td></tr>
+                        <tr><td>Work Order Approval</td><td><span class="badge bg-success">Yes</span></td><td><span class="badge bg-success">Yes</span></td><td><span class="badge bg-danger">No</span></td><td><span class="badge bg-danger">No</span></td></tr>
+                        <tr><td>Checklist & Step Sign-off</td><td><span class="badge bg-success">Yes</span></td><td><span class="badge bg-success">Yes</span></td><td><span class="badge bg-success">Yes</span></td><td><span class="badge bg-danger">No</span></td></tr>
+                        <tr><td>Spare Parts Allocation</td><td><span class="badge bg-success">Yes</span></td><td><span class="badge bg-success">Yes</span></td><td><span class="badge bg-success">Yes</span></td><td><span class="badge bg-danger">No</span></td></tr>
+                        <tr><td>Compliance Audit Trail</td><td><span class="badge bg-success">Full Access</span></td><td><span class="badge bg-danger">No</span></td><td><span class="badge bg-danger">No</span></td><td><span class="badge bg-success">Full Access</span></td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="alert alert-info mt-3 small mb-0">
+                <i class="bi bi-info-circle-fill me-1"></i> <strong>Department Isolation Policy:</strong>
+                Implemented via <code>DepartmentAuthorizationHandler</code>. Managers and technicians are scoped to their assigned facility branch (e.g. Electrical Maintenance vs Plant Operations), preventing unauthorized operational cross-talk.
+            </div>
+        </div>
+    </div>
+
+    <!-- 4. State & Session Tab -->
+    <div class="tab-pane fade" id="state">
+        <div class="card p-4">
+            <h5 class="fw-bold text-dark border-bottom pb-2">Multi-Step Inspection Wizard (State & Session)</h5>
+            <p class="text-muted">
+                Demonstrates enterprise state management using <strong>Distributed Memory Caching</strong> and the <strong>Post-Redirect-Get (PRG)</strong> pattern without premature database persistence:
+            </p>
+
+            <div class="row g-3 mt-2">
+                <div class="col-md-4">
+                    <div class="card p-3 h-100 bg-light">
+                        <div class="fw-bold text-primary mb-1">Step 1: Equipment Pre-Check</div>
+                        <p class="small text-muted mb-0">Records asset selection, meter hours, thermal signatures, and vibration anomalies into <code>HttpContext.Session</code>.</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card p-3 h-100 bg-light">
+                        <div class="fw-bold text-primary mb-1">Step 2: Diagnostics & Tasks</div>
+                        <p class="small text-muted mb-0">Builds diagnostic failure modes, labor estimations, and dynamically customizes checklist tasks.</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card p-3 h-100 bg-light">
+                        <div class="fw-bold text-primary mb-1">Step 3: Parts & Sign-Off</div>
+                        <p class="small text-muted mb-0">Maintains a session cart of reserved spare parts, captures digital technician badge sign-off, and executes an atomic DB commit.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 5. DB & Stored Procedures Tab -->
+    <div class="tab-pane fade" id="db">
+        <div class="card p-4">
+            <h5 class="fw-bold text-dark border-bottom pb-2">Database Architecture & Stored Procedures</h5>
+            <p class="text-muted">
+                Maintained in <code>D:\Anubhaw\Projects\DB\Enterprise CMMS DB.sql</code> under the <strong>`Projects`</strong> schema.
+            </p>
+
+            <h6 class="fw-bold mt-3">The 5 Production Stored Procedures</h6>
+            <ul class="small text-muted">
+                <li><code>Projects.sp_CreateWorkOrder</code>: Transactional creation with auto-generated formatted WO number (<code>WO-YYYY-XXXXX</code>) and initial audit log.</li>
+                <li><code>Projects.sp_ApproveWorkOrder</code>: Managerial authorization, status change, and asset status locking.</li>
+                <li><code>Projects.sp_AllocateSparePart</code>: Atomic inventory deduction with <code>UPDLOCK</code> row locking to prevent race conditions.</li>
+                <li><code>Projects.sp_GetAssetMaintenanceSummary</code>: KPI metrics, total orders, completed orders, downtime hours, and spare parts costs.</li>
+                <li><code>Projects.sp_RotateRefreshToken</code>: Cryptographic JWT refresh token rotation with replay attack detection.</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- 6. Resume Highlights Tab -->
+    <div class="tab-pane fade" id="resume">
+        <div class="card p-4">
+            <h5 class="fw-bold text-dark border-bottom pb-2">Ready-To-Use Resume Bullet Points</h5>
+            <div class="bg-light p-3 rounded font-monospace small mb-3">
+                <strong>Enterprise Asset & Maintenance Management System (ApexCMMS)</strong><br />
+                <em>Tech Stack: ASP.NET Core 10/9 MVC, C#, EF Core, SQL Server, Identity, JWT, Redis/Distributed Session</em><br /><br />
+                • Architected a multi-tier solution adhering to Clean Architecture principles separating Domain, Application, Infrastructure, and Presentation layers.<br />
+                • Implemented hybrid security combining ASP.NET Core Identity cookie-based auth for Razor MVC and HMAC-SHA256 JWT bearer tokens with refresh token rotation for mobile REST APIs.<br />
+                • Built granular Claims- and Policy-based RBAC enforcing department-level data isolation across 4 distinct enterprise user roles.<br />
+                • Managed stateful workflows using Distributed Session caching for a 3-step diagnostic inspection wizard and parts reservation cart.<br />
+                • Prevented data race conditions utilizing EF Core Optimistic Concurrency Control (RowVersion) and built an automated ChangeTracker audit trail recording JSON property diffs for every state mutation.<br />
+                • Authored transactional T-SQL Stored Procedures in a custom Projects database schema for high-throughput work order creation, row-locked inventory deduction, and token rotation.
+            </div>
+        </div>
+    </div>
+</div>

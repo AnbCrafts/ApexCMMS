@@ -1,0 +1,213 @@
+@model DashboardMetricsDto
+@{
+    ViewData["Title"] = "Operations Dashboard";
+    var recentWorkOrders = ViewBag.RecentWorkOrders as List<WorkOrder> ?? new List<WorkOrder>();
+    var recentAuditLogs = ViewBag.RecentAuditLogs as List<AuditLog>;
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h3 class="fw-bold text-dark mb-0">Operations Command Center</h3>
+        <p class="text-muted small mb-0">Facility telemetry, asset status breakdown, and work order tracking</p>
+    </div>
+    <div class="d-flex gap-2">
+        <a asp-controller="Dashboard" asp-action="Architecture" class="btn btn-outline-dark">
+            <i class="bi bi-journal-code me-1"></i> Architecture Guide
+        </a>
+        <a asp-controller="InspectionWizard" asp-action="Step1" class="btn btn-outline-primary">
+            <i class="bi bi-magic me-1"></i> Inspection Wizard
+        </a>
+        <a asp-controller="WorkOrders" asp-action="Create" class="btn btn-primary">
+            <i class="bi bi-plus-circle me-1"></i> Create Work Order
+        </a>
+    </div>
+</div>
+
+<!-- KPI Cards Grid -->
+<div class="row g-3 mb-4">
+    <!-- Assets Card -->
+    <div class="col-md-3">
+        <div class="card p-3 h-100 border-start border-primary border-4">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <div class="text-muted small fw-semibold text-uppercase">Total Assets</div>
+                    <div class="fs-3 fw-bold text-dark">@Model.TotalAssets</div>
+                </div>
+                <div class="bg-primary bg-opacity-10 text-primary p-3 rounded-circle">
+                    <i class="bi bi-cpu fs-4"></i>
+                </div>
+            </div>
+            <div class="mt-2 small text-muted">
+                <span class="text-success fw-bold">@Model.OperationalAssets Operational</span> |
+                <span class="text-warning fw-bold">@Model.UnderMaintenanceAssets In Repair</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Active Work Orders Card -->
+    <div class="col-md-3">
+        <div class="card p-3 h-100 border-start border-info border-4">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <div class="text-muted small fw-semibold text-uppercase">Active Work Orders</div>
+                    <div class="fs-3 fw-bold text-dark">@Model.InProgressWorkOrders</div>
+                </div>
+                <div class="bg-info bg-opacity-10 text-info p-3 rounded-circle">
+                    <i class="bi bi-clock-history fs-4"></i>
+                </div>
+            </div>
+            <div class="mt-2 small text-muted">
+                <span>@Model.PendingApprovalWorkOrders Pending Approval</span> |
+                <span class="text-success">@Model.CompletedWorkOrders Completed</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Emergency Maintenance Card -->
+    <div class="col-md-3">
+        <div class="card p-3 h-100 border-start border-danger border-4">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <div class="text-muted small fw-semibold text-uppercase">Emergency Priority</div>
+                    <div class="fs-3 fw-bold @(Model.EmergencyWorkOrders > 0 ? "text-danger" : "text-dark")">
+                        @Model.EmergencyWorkOrders
+                    </div>
+                </div>
+                <div class="bg-danger bg-opacity-10 text-danger p-3 rounded-circle">
+                    <i class="bi bi-exclamation-octagon fs-4"></i>
+                </div>
+            </div>
+            <div class="mt-2 small text-muted">
+                @(Model.EmergencyWorkOrders > 0 ? "Requires immediate field intervention" : "No critical equipment down")
+            </div>
+        </div>
+    </div>
+
+    <!-- Spare Parts Valuation Card -->
+    <div class="col-md-3">
+        <div class="card p-3 h-100 border-start border-success border-4">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <div class="text-muted small fw-semibold text-uppercase">Warehouse Stock</div>
+                    <div class="fs-3 fw-bold text-dark">$@Model.TotalInventoryValuation.ToString("N0")</div>
+                </div>
+                <div class="bg-success bg-opacity-10 text-success p-3 rounded-circle">
+                    <i class="bi bi-box-seam fs-4"></i>
+                </div>
+            </div>
+            <div class="mt-2 small">
+                @if (Model.LowStockPartsCount > 0)
+                {
+                    <span class="text-danger fw-bold"><i class="bi bi-arrow-down-circle"></i> @Model.LowStockPartsCount low-stock items</span>
+                }
+                else
+                {
+                    <span class="text-muted">Stock levels healthy</span>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Main Section: Recent Work Orders & Quick Actions -->
+<div class="row g-4 mb-4">
+    <div class="col-lg-8">
+        <div class="card">
+            <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+                <h5 class="fw-bold mb-0">Active Maintenance Orders</h5>
+                <a asp-controller="WorkOrders" asp-action="Index" class="btn btn-sm btn-outline-secondary">View All</a>
+            </div>
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light small text-uppercase">
+                        <tr>
+                            <th>Order #</th>
+                            <th>Equipment</th>
+                            <th>Priority</th>
+                            <th>Status</th>
+                            <th>Assigned Tech</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (recentWorkOrders.Count == 0)
+                        {
+                            <tr><td colspan="6" class="text-center py-4 text-muted">No maintenance orders logged yet.</td></tr>
+                        }
+                        else
+                        {
+                            @foreach (var wo in recentWorkOrders)
+                            {
+                                <tr>
+                                    <td class="fw-bold font-monospace">@wo.WorkOrderNumber</td>
+                                    <td>
+                                        <div class="fw-semibold">@wo.Asset?.Name</div>
+                                        <span class="badge bg-light text-muted border">@wo.Asset?.AssetTag</span>
+                                    </td>
+                                    <td>
+                                        @if (wo.Priority == WorkOrderPriority.Emergency) { <span class="badge badge-soft-danger"><i class="bi bi-lightning-fill"></i> Emergency</span> }
+                                        else if (wo.Priority == WorkOrderPriority.High) { <span class="badge badge-soft-warning">High</span> }
+                                        else if (wo.Priority == WorkOrderPriority.Medium) { <span class="badge badge-soft-info">Medium</span> }
+                                        else { <span class="badge badge-soft-secondary">Low</span> }
+                                    </td>
+                                    <td>
+                                        @if (wo.Status == WorkOrderStatus.InProgress) { <span class="badge bg-primary">In Progress</span> }
+                                        else if (wo.Status == WorkOrderStatus.Submitted) { <span class="badge bg-warning text-dark">Submitted</span> }
+                                        else if (wo.Status == WorkOrderStatus.Approved) { <span class="badge bg-info text-dark">Approved</span> }
+                                        else if (wo.Status == WorkOrderStatus.Completed) { <span class="badge bg-success">Completed</span> }
+                                        else { <span class="badge bg-secondary">@wo.Status</span> }
+                                    </td>
+                                    <td>@(wo.AssignedTechnician?.FullName ?? "Unassigned")</td>
+                                    <td>
+                                        <a asp-controller="WorkOrders" asp-action="Details" asp-route-id="@wo.Id" class="btn btn-sm btn-light">
+                                            <i class="bi bi-chevron-right"></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Navigation / Architectural Features Box -->
+    <div class="col-lg-4">
+        <div class="card p-3 mb-4">
+            <h6 class="fw-bold text-dark mb-3">Enterprise Architectural Highlights</h6>
+            <ul class="list-unstyled small text-muted mb-0">
+                <li class="mb-2"><i class="bi bi-shield-check text-success me-2"></i> <strong>Dual-Auth:</strong> Cookie session + JWT Bearer API</li>
+                <li class="mb-2"><i class="bi bi-diagram-3 text-primary me-2"></i> <strong>Clean Architecture:</strong> Domain / App / Infra / Web</li>
+                <li class="mb-2"><i class="bi bi-fingerprint text-info me-2"></i> <strong>RBAC & Policies:</strong> 4 distinct roles + Department isolation</li>
+                <li class="mb-2"><i class="bi bi-arrow-repeat text-warning me-2"></i> <strong>State Management:</strong> Multi-step session & TempData</li>
+                <li class="mb-2"><i class="bi bi-database-lock text-secondary me-2"></i> <strong>EF Core Concurrency:</strong> Optimistic RowVersion locking</li>
+                <li><i class="bi bi-journal-check text-danger me-2"></i> <strong>Automated Audit:</strong> ChangeTracker JSON diff logging</li>
+            </ul>
+        </div>
+
+        @if (recentAuditLogs != null && recentAuditLogs.Count > 0)
+        {
+            <div class="card p-3">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <h6 class="fw-bold mb-0">Compliance Audit Trail</h6>
+                    <a asp-controller="Audit" asp-action="Index" class="small text-decoration-none">Full Log</a>
+                </div>
+                <div class="list-group list-group-flush small">
+                    @foreach (var log in recentAuditLogs)
+                    {
+                        <div class="list-group-item px-0 py-2 border-bottom">
+                            <div class="d-flex justify-content-between">
+                                <span class="fw-bold text-dark">@log.Action</span>
+                                <span class="text-muted" style="font-size: 0.7rem;">@log.TimestampUtc.ToString("HH:mm:ss")</span>
+                            </div>
+                            <div class="text-muted" style="font-size: 0.75rem;">
+                                @log.EntityName | @(log.UserEmail ?? "System")
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        }
+    </div>
+</div>

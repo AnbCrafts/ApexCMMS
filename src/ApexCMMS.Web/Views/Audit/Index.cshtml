@@ -1,0 +1,101 @@
+@model List<AuditLog>
+@{
+    ViewData["Title"] = "Security & Compliance Audit Trail";
+    var entityName = ViewBag.EntityName as string;
+    var actionType = ViewBag.ActionType as string;
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h3 class="fw-bold text-dark mb-0">Security & Compliance Audit Trail</h3>
+        <p class="text-muted small mb-0">Immutable entity alteration logs generated automatically by EF Core ChangeTracker</p>
+    </div>
+    <span class="badge bg-danger p-2"><i class="bi bi-shield-lock-fill me-1"></i> Auditor & SuperAdmin Restricted</span>
+</div>
+
+<!-- Filter Bar -->
+<div class="card p-3 mb-4">
+    <form method="get" class="row g-2 align-items-center">
+        <div class="col-md-5">
+            <input type="text" name="entityName" value="@entityName" class="form-control" placeholder="Filter by Entity Name (e.g. Asset, WorkOrder, SparePart)..." />
+        </div>
+        <div class="col-md-5">
+            <select name="actionType" class="form-select">
+                <option value="">-- All Actions --</option>
+                <option value="CREATE" selected="@(actionType == "CREATE")">CREATE</option>
+                <option value="UPDATE" selected="@(actionType == "UPDATE")">UPDATE</option>
+                <option value="DELETE" selected="@(actionType == "DELETE")">DELETE</option>
+                <option value="STATUS_CHANGE" selected="@(actionType == "STATUS_CHANGE")">STATUS_CHANGE</option>
+            </select>
+        </div>
+        <div class="col-md-2 d-flex gap-2">
+            <button type="submit" class="btn btn-primary w-100"><i class="bi bi-filter"></i> Filter</button>
+            <a asp-action="Index" class="btn btn-outline-secondary"><i class="bi bi-arrow-counterclockwise"></i></a>
+        </div>
+    </form>
+</div>
+
+<!-- Audit Trail Table -->
+<div class="card">
+    <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0 small">
+            <thead class="table-light text-uppercase">
+                <tr>
+                    <th>Timestamp (UTC)</th>
+                    <th>User</th>
+                    <th>Action</th>
+                    <th>Entity</th>
+                    <th>Entity ID</th>
+                    <th>Changes Diff (JSON)</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model.Count == 0)
+                {
+                    <tr><td colspan="6" class="text-center py-4 text-muted">No audit events recorded.</td></tr>
+                }
+                else
+                {
+                    @foreach (var log in Model)
+                    {
+                        <tr>
+                            <td class="font-monospace text-muted">@log.TimestampUtc.ToString("yyyy-MM-dd HH:mm:ss")</td>
+                            <td>
+                                <div class="fw-semibold">@(log.UserEmail ?? "System Worker")</div>
+                                @if (!string.IsNullOrEmpty(log.IpAddress))
+                                {
+                                    <div class="text-muted" style="font-size: 0.7rem;">IP: @log.IpAddress</div>
+                                }
+                            </td>
+                            <td>
+                                @if (log.Action == "CREATE") { <span class="badge bg-success">CREATE</span> }
+                                else if (log.Action == "UPDATE") { <span class="badge bg-primary">UPDATE</span> }
+                                else if (log.Action == "DELETE") { <span class="badge bg-danger">DELETE</span> }
+                                else { <span class="badge bg-warning text-dark">@log.Action</span> }
+                            </td>
+                            <td class="fw-bold">@log.EntityName</td>
+                            <td class="font-monospace text-truncate" style="max-width: 150px;" title="@log.EntityId">@log.EntityId</td>
+                            <td>
+                                <button type="button" class="btn btn-sm btn-outline-secondary" data-bs-toggle="collapse" data-bs-target="#diff-@log.Id">
+                                    <i class="bi bi-code-slash"></i> View JSON Diff
+                                </button>
+                                <div class="collapse mt-2" id="diff-@log.Id">
+                                    @if (!string.IsNullOrEmpty(log.OldValues))
+                                    {
+                                        <div class="small text-danger fw-bold">Previous State:</div>
+                                        <pre class="bg-light p-2 rounded mb-1 text-wrap" style="font-size: 0.75rem;">@log.OldValues</pre>
+                                    }
+                                    @if (!string.IsNullOrEmpty(log.NewValues))
+                                    {
+                                        <div class="small text-success fw-bold">Updated State:</div>
+                                        <pre class="bg-light p-2 rounded text-wrap" style="font-size: 0.75rem;">@log.NewValues</pre>
+                                    }
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

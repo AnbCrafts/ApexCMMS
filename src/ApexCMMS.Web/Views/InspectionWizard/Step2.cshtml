@@ -1,0 +1,74 @@
+@model InspectionWizardState
+@{
+    ViewData["Title"] = "Inspection Wizard - Step 2";
+}
+
+<div class="mb-4">
+    <h3 class="fw-bold text-dark mb-0">Multi-Step Asset Inspection Wizard</h3>
+    <p class="text-muted small">Session-backed stateful diagnostic & maintenance dispatch pipeline</p>
+</div>
+
+<!-- Wizard Step Indicator -->
+<div class="card p-3 mb-4">
+    <div class="d-flex justify-content-between mb-2 small fw-bold">
+        <span class="text-success"><i class="bi bi-check-circle-fill"></i> Step 1: Equipment Pre-Check</span>
+        <span class="text-primary"><i class="bi bi-2-circle-fill"></i> Step 2: Diagnostics & Tasks</span>
+        <span class="text-muted"><i class="bi bi-3-circle"></i> Step 3: Parts Reservation & Sign-off</span>
+    </div>
+    <div class="progress" style="height: 8px;">
+        <div class="progress-bar bg-primary" role="progressbar" style="width: 66%"></div>
+    </div>
+</div>
+
+<div class="card p-4" style="max-width: 800px;">
+    <div class="d-flex justify-content-between align-items-center mb-3 border-bottom pb-2">
+        <h5 class="fw-bold mb-0">Step 2: Maintenance Diagnostic & Checklist Tasks</h5>
+        <span class="badge bg-light text-primary border">Equipment: @Model.AssetName</span>
+    </div>
+
+    <form asp-action="Step2" method="post">
+        @Html.AntiForgeryToken()
+
+        <div class="row g-3">
+            <div class="col-12">
+                <label asp-for="WorkOrderTitle" class="form-label fw-semibold small">Maintenance Title</label>
+                <input asp-for="WorkOrderTitle" class="form-control" placeholder="e.g., Immediate Bearing Alignment & Heat Dissipation Fix" required />
+            </div>
+
+            <div class="col-md-6">
+                <label asp-for="Priority" class="form-label fw-semibold small"></label>
+                <select asp-for="Priority" class="form-select" asp-items="Html.GetEnumSelectList<WorkOrderPriority>()"></select>
+            </div>
+
+            <div class="col-md-6">
+                <label asp-for="EstimatedHours" class="form-label fw-semibold small">Planned Labor Hours</label>
+                <input asp-for="EstimatedHours" type="number" step="0.5" class="form-control" required />
+            </div>
+
+            <div class="col-12">
+                <label asp-for="IssueDescription" class="form-label fw-semibold small">Diagnostic Findings & Failure Mode</label>
+                <textarea asp-for="IssueDescription" class="form-control" rows="3" placeholder="Describe detected fault modes, sensor tolerances exceeded..." required></textarea>
+            </div>
+
+            <div class="col-12 mt-3">
+                <label class="form-label fw-semibold small d-block">Pre-Configured Checklist Tasks</label>
+                <ul class="list-group">
+                    @for (int i = 0; i < Model.InspectionTasks.Count; i++)
+                    {
+                        <li class="list-group-item d-flex align-items-center gap-2 small">
+                            <i class="bi bi-check-square-fill text-primary"></i>
+                            <input type="text" name="InspectionTasks[@i]" value="@Model.InspectionTasks[i]" class="form-control form-control-sm border-0 bg-transparent" />
+                        </li>
+                    }
+                </ul>
+            </div>
+        </div>
+
+        <div class="d-flex justify-content-between mt-4">
+            <a asp-action="Step1" class="btn btn-outline-secondary"><i class="bi bi-arrow-left me-1"></i> Back to Step 1</a>
+            <button type="submit" class="btn btn-primary px-4">
+                Next: Parts & Sign-Off <i class="bi bi-arrow-right ms-1"></i>
+            </button>
+        </div>
+    </form>
+</div>

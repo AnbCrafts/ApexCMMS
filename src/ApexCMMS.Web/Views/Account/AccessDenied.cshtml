@@ -1,0 +1,18 @@
+@{
+    ViewData["Title"] = "Access Denied";
+}
+
+<div class="card p-5 text-center shadow-sm" style="max-width: 500px;">
+    <div class="text-danger mb-3">
+        <i class="bi bi-shield-x" style="font-size: 4rem;"></i>
+    </div>
+    <h2 class="fw-bold">403 - Access Denied</h2>
+    <p class="text-muted">
+        Your current role does not have the required RBAC permissions to access this department or resource.
+    </p>
+    <div class="mt-3">
+        <a asp-controller="Dashboard" asp-action="Index" class="btn btn-primary">
+            <i class="bi bi-house me-1"></i> Return to Dashboard
+        </a>
+    </div>
+</div>

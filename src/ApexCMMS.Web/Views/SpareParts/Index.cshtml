@@ -1,0 +1,87 @@
+@model List<SparePart>
+@{
+    ViewData["Title"] = "Spare Parts Inventory";
+    var lowStockOnly = ViewBag.LowStockOnly as bool?;
+    var search = ViewBag.Search as string;
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h3 class="fw-bold text-dark mb-0">Warehouse Inventory & Spare Parts</h3>
+        <p class="text-muted small mb-0">Monitor SKU inventory levels, bin locations, and minimum threshold alerts</p>
+    </div>
+</div>
+
+<!-- Search & Filter -->
+<div class="card p-3 mb-4">
+    <form method="get" class="row g-2 align-items-center">
+        <div class="col-md-6">
+            <input type="text" name="search" value="@search" class="form-control" placeholder="Search by SKU, Part Name, Bin Location..." />
+        </div>
+        <div class="col-md-4">
+            <div class="form-check form-switch pt-2">
+                <input class="form-check-input" type="checkbox" name="lowStockOnly" value="true" id="lowStockCheck" @(lowStockOnly == true ? "checked" : "") />
+                <label class="form-check-label small fw-semibold" for="lowStockCheck">Show Low Stock Warnings Only</label>
+            </div>
+        </div>
+        <div class="col-md-2 d-flex gap-2">
+            <button type="submit" class="btn btn-primary w-100"><i class="bi bi-filter"></i> Filter</button>
+            <a asp-action="Index" class="btn btn-outline-secondary"><i class="bi bi-arrow-counterclockwise"></i></a>
+        </div>
+    </form>
+</div>
+
+<!-- Spare Parts Table -->
+<div class="card">
+    <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+            <thead class="table-light small text-uppercase">
+                <tr>
+                    <th>Part # (SKU)</th>
+                    <th>Part Name</th>
+                    <th>Unit Cost</th>
+                    <th>Stock On Hand</th>
+                    <th>Minimum Threshold</th>
+                    <th>Warehouse Bin</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model.Count == 0)
+                {
+                    <tr><td colspan="7" class="text-center py-4 text-muted">No parts found matching criteria.</td></tr>
+                }
+                else
+                {
+                    @foreach (var part in Model)
+                    {
+                        var isLow = part.QuantityOnHand <= part.MinimumStockLevel;
+                        <tr class="@(isLow ? "table-danger bg-opacity-10" : "")">
+                            <td class="font-monospace fw-bold">@part.PartNumber</td>
+                            <td>
+                                <div class="fw-semibold">@part.Name</div>
+                                <div class="small text-muted">@part.Description</div>
+                            </td>
+                            <td class="font-monospace">$@part.UnitPrice.ToString("F2")</td>
+                            <td>
+                                <span class="fw-bold fs-6 @(isLow ? "text-danger" : "text-dark")">@part.QuantityOnHand</span>
+                            </td>
+                            <td>@part.MinimumStockLevel units</td>
+                            <td><span class="badge bg-light text-dark border font-monospace">@part.BinLocation</span></td>
+                            <td>
+                                @if (isLow)
+                                {
+                                    <span class="badge badge-soft-danger"><i class="bi bi-exclamation-triangle-fill"></i> Reorder Required</span>
+                                }
+                                else
+                                {
+                                    <span class="badge badge-soft-success">Stock Healthy</span>
+                                }
+                            </td>
+                        </tr>
+                    }
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

@@ -1,0 +1,80 @@
+@model LoginRequestDto
+@{
+    ViewData["Title"] = "Enterprise Login";
+}
+
+<div class="card shadow-lg p-4" style="max-width: 480px; width: 100%;">
+    <div class="text-center mb-4">
+        <div class="d-inline-flex align-items-center justify-content-center bg-primary bg-opacity-10 text-primary rounded-circle mb-3" style="width: 64px; height: 64px;">
+            <i class="bi bi-shield-lock fs-2"></i>
+        </div>
+        <h3 class="fw-bold text-dark">ApexCMMS</h3>
+        <p class="text-muted small">Enterprise Asset & Maintenance Portal</p>
+    </div>
+
+    @if (!ViewData.ModelState.IsValid)
+    {
+        <div class="alert alert-danger py-2 small">
+            @Html.ValidationSummary(false, "", new { @class = "mb-0" })
+        </div>
+    }
+
+    <form asp-action="Login" method="post" asp-route-returnurl="@ViewData["ReturnUrl"]">
+        @Html.AntiForgeryToken()
+
+        <div class="mb-3">
+            <label asp-for="UsernameOrEmail" class="form-label small fw-semibold">Email or Employee ID</label>
+            <div class="input-group">
+                <span class="input-group-text bg-light"><i class="bi bi-envelope"></i></span>
+                <input asp-for="UsernameOrEmail" id="emailInput" class="form-control" placeholder="admin@apexcmms.com" required autofocus />
+            </div>
+            <span asp-validation-for="UsernameOrEmail" class="text-danger small"></span>
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="Password" class="form-label small fw-semibold">Password</label>
+            <div class="input-group">
+                <span class="input-group-text bg-light"><i class="bi bi-key"></i></span>
+                <input asp-for="Password" id="passwordInput" type="password" class="form-control" placeholder="••••••••" required />
+            </div>
+            <span asp-validation-for="Password" class="text-danger small"></span>
+        </div>
+
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div class="form-check">
+                <input asp-for="RememberMe" class="form-check-input" />
+                <label asp-for="RememberMe" class="form-check-label small">Remember session</label>
+            </div>
+            <span class="badge bg-light text-muted border">Dual-Auth Protected</span>
+        </div>
+
+        <button type="submit" class="btn btn-primary w-100 py-2 fw-semibold mb-3">
+            <i class="bi bi-box-arrow-in-right me-1"></i> Authenticate
+        </button>
+    </form>
+
+    <div class="border-top pt-3 mt-2">
+        <div class="small fw-bold text-muted mb-2 text-center">Quick 1-Click Role Login</div>
+        <div class="d-flex flex-wrap gap-1 justify-content-center">
+            <button type="button" class="btn btn-sm btn-outline-danger" onclick="fillCredentials('admin@apexcmms.com', 'Admin@123!')">
+                <i class="bi bi-shield-fill"></i> Admin
+            </button>
+            <button type="button" class="btn btn-sm btn-outline-warning" onclick="fillCredentials('manager@apexcmms.com', 'Manager@123!')">
+                <i class="bi bi-person-gear"></i> Manager
+            </button>
+            <button type="button" class="btn btn-sm btn-outline-info" onclick="fillCredentials('tech@apexcmms.com', 'Tech@123!')">
+                <i class="bi bi-wrench"></i> Technician
+            </button>
+            <button type="button" class="btn btn-sm btn-outline-secondary" onclick="fillCredentials('auditor@apexcmms.com', 'Auditor@123!')">
+                <i class="bi bi-file-earmark-check"></i> Auditor
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>
+    function fillCredentials(email, password) {
+        document.getElementById('emailInput').value = email;
+        document.getElementById('passwordInput').value = password;
+    }
+</script>

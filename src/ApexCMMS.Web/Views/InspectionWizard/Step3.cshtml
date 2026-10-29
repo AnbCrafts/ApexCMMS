@@ -1,0 +1,103 @@
+@model InspectionWizardState
+@{
+    ViewData["Title"] = "Inspection Wizard - Step 3";
+    var availableParts = ViewBag.AvailableParts as List<SparePart> ?? new List<SparePart>();
+    var technicians = ViewBag.Technicians as SelectList;
+}
+
+<div class="mb-4">
+    <h3 class="fw-bold text-dark mb-0">Multi-Step Asset Inspection Wizard</h3>
+    <p class="text-muted small">Session-backed stateful diagnostic & maintenance dispatch pipeline</p>
+</div>
+
+<!-- Wizard Step Indicator -->
+<div class="card p-3 mb-4">
+    <div class="d-flex justify-content-between mb-2 small fw-bold">
+        <span class="text-success"><i class="bi bi-check-circle-fill"></i> Step 1: Equipment Pre-Check</span>
+        <span class="text-success"><i class="bi bi-check-circle-fill"></i> Step 2: Diagnostics & Tasks</span>
+        <span class="text-primary"><i class="bi bi-3-circle-fill"></i> Step 3: Parts Reservation & Sign-off</span>
+    </div>
+    <div class="progress" style="height: 8px;">
+        <div class="progress-bar bg-success" role="progressbar" style="width: 100%"></div>
+    </div>
+</div>
+
+<div class="row g-4" style="max-width: 1000px;">
+    <!-- Step 3 Main Form -->
+    <div class="col-lg-7">
+        <div class="card p-4">
+            <h5 class="fw-bold mb-3 border-bottom pb-2">Final Dispatch & Sign-Off</h5>
+
+            <form asp-action="SubmitFinal" method="post">
+                @Html.AntiForgeryToken()
+
+                <div class="mb-3">
+                    <label class="form-label fw-semibold small">Assign Lead Field Technician</label>
+                    <select asp-for="AssignedTechnicianId" class="form-select" asp-items="technicians">
+                        <option value="">-- Select Technician --</option>
+                    </select>
+                </div>
+
+                <div class="mb-4">
+                    <label asp-for="SignOffBadgeNumber" class="form-label fw-semibold small">Inspector Employee Badge # (Digital Sign-Off)</label>
+                    <input asp-for="SignOffBadgeNumber" class="form-control" placeholder="EMP-XXXX" required />
+                    <div class="form-text small">By submitting, you electronically certify this diagnostic inspection under CMMS policy.</div>
+                </div>
+
+                <div class="d-flex justify-content-between border-top pt-3">
+                    <a asp-action="Step2" class="btn btn-outline-secondary"><i class="bi bi-arrow-left me-1"></i> Back to Step 2</a>
+                    <button type="submit" class="btn btn-success px-4 fw-bold">
+                        <i class="bi bi-check2-all me-1"></i> Finalize & Dispatch Order
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Spare Parts Reservation Cart in Session -->
+    <div class="col-lg-5">
+        <div class="card p-3 mb-3">
+            <h6 class="fw-bold text-dark mb-2">Reserve Spare Parts (Session Cart)</h6>
+            <form asp-action="AddPart" method="post" class="mb-3">
+                @Html.AntiForgeryToken()
+                <div class="mb-2">
+                    <select name="sparePartId" class="form-select form-select-sm" required>
+                        <option value="">-- Choose Spare Part --</option>
+                        @foreach (var part in availableParts)
+                        {
+                            <option value="@part.Id">@part.Name (@part.QuantityOnHand in stock) - $@part.UnitPrice</option>
+                        }
+                    </select>
+                </div>
+                <div class="input-group input-group-sm">
+                    <input type="number" name="quantity" class="form-control" value="1" min="1" max="50" placeholder="Qty" required />
+                    <button type="submit" class="btn btn-primary"><i class="bi bi-cart-plus"></i> Add to Session</button>
+                </div>
+            </form>
+
+            <div class="border-top pt-2">
+                <div class="small fw-bold text-muted mb-2">Currently Reserved for this Order:</div>
+                @if (Model.ReservedParts.Count == 0)
+                {
+                    <div class="text-muted small fst-italic">No parts reserved yet.</div>
+                }
+                else
+                {
+                    <ul class="list-group list-group-flush small">
+                        @foreach (var part in Model.ReservedParts)
+                        {
+                            <li class="list-group-item d-flex justify-content-between px-0 py-1">
+                                <div>@part.Quantity x @part.PartName</div>
+                                <span class="fw-bold font-monospace">$@((part.Quantity * part.UnitPrice).ToString("F2"))</span>
+                            </li>
+                        }
+                    </ul>
+                    <div class="d-flex justify-content-between fw-bold border-top pt-2 mt-2">
+                        <span>Total Projected:</span>
+                        <span class="text-primary font-monospace">$@(Model.ReservedParts.Sum(p => p.Quantity * p.UnitPrice).ToString("F2"))</span>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,112 @@
+@model Asset
+@{
+    ViewData["Title"] = $"{Model.Name} - Asset Details";
+}
+
+<div class="mb-4">
+    <a asp-action="Index" class="btn btn-sm btn-outline-secondary mb-2">
+        <i class="bi bi-arrow-left"></i> Back to Equipment Registry
+    </a>
+    <div class="d-flex justify-content-between align-items-center">
+        <div>
+            <h3 class="fw-bold text-dark mb-0">@Model.Name</h3>
+            <div class="d-flex gap-2 align-items-center mt-1">
+                <span class="badge bg-secondary font-monospace">@Model.AssetTag</span>
+                <span class="text-muted small">Department: @Model.Department?.Name</span>
+                <span class="text-muted small">Category: @Model.Category?.Name</span>
+            </div>
+        </div>
+        <div class="d-flex gap-2">
+            <a asp-controller="WorkOrders" asp-action="Create" class="btn btn-outline-primary">
+                <i class="bi bi-tools"></i> Open Work Order
+            </a>
+            @if (User.IsInRole("SuperAdmin") || User.IsInRole("OperationsManager"))
+            {
+                <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary">
+                    <i class="bi bi-pencil"></i> Edit Equipment
+                </a>
+            }
+        </div>
+    </div>
+</div>
+
+<div class="row g-4">
+    <!-- Equipment Specs -->
+    <div class="col-md-5">
+        <div class="card p-4">
+            <h5 class="fw-bold mb-3 border-bottom pb-2">Technical Specifications</h5>
+            <dl class="row mb-0 small">
+                <dt class="col-sm-5 text-muted">Serial Number:</dt>
+                <dd class="col-sm-7 fw-semibold">@(Model.SerialNumber ?? "N/A")</dd>
+
+                <dt class="col-sm-5 text-muted">Status:</dt>
+                <dd class="col-sm-7">
+                    @if (Model.Status == AssetStatus.Operational) { <span class="badge bg-success">Operational</span> }
+                    else if (Model.Status == AssetStatus.UnderMaintenance) { <span class="badge bg-warning text-dark">Under Maintenance</span> }
+                    else if (Model.Status == AssetStatus.Degraded) { <span class="badge bg-danger">Degraded</span> }
+                    else { <span class="badge bg-secondary">Decommissioned</span> }
+                </dd>
+
+                <dt class="col-sm-5 text-muted">Criticality Rating:</dt>
+                <dd class="col-sm-7">
+                    @if (Model.Criticality == AssetCriticality.MissionCritical) { <span class="badge badge-soft-danger">Mission Critical</span> }
+                    else if (Model.Criticality == AssetCriticality.High) { <span class="badge badge-soft-warning">High</span> }
+                    else { <span class="badge badge-soft-info">@Model.Criticality</span> }
+                </dd>
+
+                <dt class="col-sm-5 text-muted">Commission Date:</dt>
+                <dd class="col-sm-7">@Model.PurchaseDate.ToString("yyyy-MM-dd")</dd>
+
+                <dt class="col-sm-5 text-muted">Warranty Expiration:</dt>
+                <dd class="col-sm-7">@(Model.WarrantyExpiryDate?.ToString("yyyy-MM-dd") ?? "None / Expired")</dd>
+
+                <dt class="col-sm-5 text-muted">Description:</dt>
+                <dd class="col-sm-7">@(Model.Description ?? "No description recorded.")</dd>
+            </dl>
+        </div>
+    </div>
+
+    <!-- Active & Historical Work Orders -->
+    <div class="col-md-7">
+        <div class="card">
+            <div class="card-header bg-white py-3">
+                <h5 class="fw-bold mb-0">Maintenance History & Work Orders</h5>
+            </div>
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0 small">
+                    <thead class="table-light">
+                        <tr>
+                            <th>WO #</th>
+                            <th>Title</th>
+                            <th>Priority</th>
+                            <th>Status</th>
+                            <th>Technician</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model.WorkOrders.Count == 0)
+                        {
+                            <tr><td colspan="5" class="text-center py-4 text-muted">No maintenance orders logged for this equipment.</td></tr>
+                        }
+                        else
+                        {
+                            @foreach (var wo in Model.WorkOrders.OrderByDescending(w => w.CreatedAtUtc))
+                            {
+                                <tr>
+                                    <td><a asp-controller="WorkOrders" asp-action="Details" asp-route-id="@wo.Id" class="fw-bold">@wo.WorkOrderNumber</a></td>
+                                    <td>@wo.Title</td>
+                                    <td>
+                                        @if (wo.Priority == WorkOrderPriority.Emergency) { <span class="badge badge-soft-danger">Emergency</span> }
+                                        else { <span class="badge badge-soft-secondary">@wo.Priority</span> }
+                                    </td>
+                                    <td><span class="badge bg-light text-dark border">@wo.Status</span></td>
+                                    <td>@(wo.AssignedTechnician?.FullName ?? "Unassigned")</td>
+                                </tr>
+                            }
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,68 @@
+@model InspectionWizardState
+@{
+    ViewData["Title"] = "Inspection Wizard - Step 1";
+}
+
+<div class="mb-4">
+    <h3 class="fw-bold text-dark mb-0">Multi-Step Asset Inspection Wizard</h3>
+    <p class="text-muted small">Session-backed stateful diagnostic & maintenance dispatch pipeline</p>
+</div>
+
+<!-- Wizard Step Indicator -->
+<div class="card p-3 mb-4">
+    <div class="d-flex justify-content-between mb-2 small fw-bold">
+        <span class="text-primary"><i class="bi bi-1-circle-fill"></i> Step 1: Equipment Pre-Check</span>
+        <span class="text-muted"><i class="bi bi-2-circle"></i> Step 2: Diagnostics & Tasks</span>
+        <span class="text-muted"><i class="bi bi-3-circle"></i> Step 3: Parts Reservation & Sign-off</span>
+    </div>
+    <div class="progress" style="height: 8px;">
+        <div class="progress-bar bg-primary" role="progressbar" style="width: 33%"></div>
+    </div>
+</div>
+
+<div class="card p-4" style="max-width: 800px;">
+    <h5 class="fw-bold mb-3 border-bottom pb-2">Step 1: Select Target Equipment & Log Pre-Check</h5>
+
+    <form asp-action="Step1" method="post">
+        @Html.AntiForgeryToken()
+
+        <div class="row g-3">
+            <div class="col-12">
+                <label class="form-label fw-semibold small">Equipment Asset</label>
+                <select asp-for="AssetId" class="form-select" asp-items="ViewBag.Assets" required></select>
+                <span asp-validation-for="AssetId" class="text-danger small"></span>
+            </div>
+
+            <div class="col-md-6">
+                <label asp-for="OperatingHours" class="form-label fw-semibold small">Current Runtime / Meter Hours</label>
+                <input asp-for="OperatingHours" type="number" step="0.5" class="form-control" placeholder="1425.0" />
+            </div>
+
+            <div class="col-md-6 d-flex align-items-center gap-4 pt-3">
+                <div class="form-check">
+                    <input asp-for="HasPhysicalVibration" class="form-check-input" />
+                    <label asp-for="HasPhysicalVibration" class="form-check-label small fw-semibold">Abnormal Vibration</label>
+                </div>
+                <div class="form-check">
+                    <input asp-for="HasAbnormalHeat" class="form-check-input" />
+                    <label asp-for="HasAbnormalHeat" class="form-check-label small fw-semibold">Thermal Anomaly</label>
+                </div>
+            </div>
+
+            <div class="col-12">
+                <label asp-for="PreCheckNotes" class="form-label fw-semibold small">Pre-Check Environmental Notes</label>
+                <textarea asp-for="PreCheckNotes" class="form-control" rows="3" placeholder="Enter ambient temperature, visual oil leaks, unusual humming noises, etc..."></textarea>
+            </div>
+        </div>
+
+        <div class="d-flex justify-content-between mt-4">
+            <form asp-action="Reset" method="post" class="d-inline">
+                @Html.AntiForgeryToken()
+                <button type="submit" class="btn btn-outline-danger btn-sm">Reset Wizard Session</button>
+            </form>
+            <button type="submit" class="btn btn-primary px-4">
+                Next: Diagnostics <i class="bi bi-arrow-right ms-1"></i>
+            </button>
+        </div>
+    </form>
+</div>

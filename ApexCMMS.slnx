@@ -1,0 +1,8 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/ApexCMMS.Application/ApexCMMS.Application.csproj" />
+    <Project Path="src/ApexCMMS.Domain/ApexCMMS.Domain.csproj" />
+    <Project Path="src/ApexCMMS.Infrastructure/ApexCMMS.Infrastructure.csproj" />
+    <Project Path="src/ApexCMMS.Web/ApexCMMS.Web.csproj" />
+  </Folder>
+</Solution>

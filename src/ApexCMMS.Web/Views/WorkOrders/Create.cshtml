@@ -1,0 +1,63 @@
+@model CreateWorkOrderDto
+@{
+    ViewData["Title"] = "Create Work Order";
+}
+
+<div class="mb-4">
+    <a asp-action="Index" class="btn btn-sm btn-outline-secondary mb-2"><i class="bi bi-arrow-left"></i> Back to Work Orders</a>
+    <h3 class="fw-bold text-dark">Submit New Maintenance Order</h3>
+</div>
+
+<div class="card p-4" style="max-width: 800px;">
+    <form asp-action="Create" method="post">
+        @Html.AntiForgeryToken()
+
+        <div class="row g-3">
+            <div class="col-12">
+                <label asp-for="Title" class="form-label fw-semibold small">Work Order Title</label>
+                <input asp-for="Title" class="form-control" placeholder="e.g., Emergency Overheating Diagnosis in Turbine Sector 1" required />
+                <span asp-validation-for="Title" class="text-danger small"></span>
+            </div>
+
+            <div class="col-md-6">
+                <label asp-for="AssetId" class="form-label fw-semibold small"></label>
+                <select asp-for="AssetId" class="form-select" asp-items="ViewBag.AssetId" required></select>
+            </div>
+
+            <div class="col-md-6">
+                <label asp-for="Priority" class="form-label fw-semibold small"></label>
+                <select asp-for="Priority" class="form-select" asp-items="Html.GetEnumSelectList<WorkOrderPriority>()"></select>
+            </div>
+
+            <div class="col-md-6">
+                <label asp-for="AssignedTechnicianId" class="form-label fw-semibold small"></label>
+                <select asp-for="AssignedTechnicianId" class="form-select" asp-items="ViewBag.AssignedTechnicianId">
+                    <option value="">-- Unassigned (Assign Later) --</option>
+                </select>
+            </div>
+
+            <div class="col-md-3">
+                <label asp-for="EstimatedHours" class="form-label fw-semibold small"></label>
+                <input asp-for="EstimatedHours" type="number" step="0.5" class="form-control" />
+            </div>
+
+            <div class="col-md-3">
+                <label asp-for="ScheduledDate" class="form-label fw-semibold small"></label>
+                <input asp-for="ScheduledDate" type="date" class="form-control" />
+            </div>
+
+            <div class="col-12">
+                <label asp-for="Description" class="form-label fw-semibold small">Diagnostic Scope & Symptoms</label>
+                <textarea asp-for="Description" class="form-control" rows="4" placeholder="Detail observed telemetry anomalies, vibration signatures, or failure events..." required></textarea>
+                <span asp-validation-for="Description" class="text-danger small"></span>
+            </div>
+        </div>
+
+        <div class="d-flex justify-content-end gap-2 mt-4">
+            <a asp-action="Index" class="btn btn-outline-secondary">Cancel</a>
+            <button type="submit" class="btn btn-primary px-4">
+                <i class="bi bi-send-check me-1"></i> Submit Work Order
+            </button>
+        </div>
+    </form>
+</div>

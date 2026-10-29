@@ -1,0 +1,74 @@
+@model CreateAssetDto
+@{
+    ViewData["Title"] = "Register Equipment";
+}
+
+<div class="mb-4">
+    <a asp-action="Index" class="btn btn-sm btn-outline-secondary mb-2"><i class="bi bi-arrow-left"></i> Back to Registry</a>
+    <h3 class="fw-bold text-dark">Register New Asset</h3>
+</div>
+
+<div class="card p-4" style="max-width: 800px;">
+    <form asp-action="Create" method="post">
+        @Html.AntiForgeryToken()
+
+        <div class="row g-3">
+            <div class="col-md-6">
+                <label asp-for="AssetTag" class="form-label fw-semibold small"></label>
+                <input asp-for="AssetTag" class="form-control" placeholder="AST-2026-005" required />
+                <span asp-validation-for="AssetTag" class="text-danger small"></span>
+            </div>
+
+            <div class="col-md-6">
+                <label asp-for="Name" class="form-label fw-semibold small">Equipment Name</label>
+                <input asp-for="Name" class="form-control" placeholder="Substation Transformer 200kVA" required />
+                <span asp-validation-for="Name" class="text-danger small"></span>
+            </div>
+
+            <div class="col-md-6">
+                <label asp-for="CategoryId" class="form-label fw-semibold small"></label>
+                <select asp-for="CategoryId" class="form-select" asp-items="ViewBag.CategoryId" required></select>
+            </div>
+
+            <div class="col-md-6">
+                <label asp-for="DepartmentId" class="form-label fw-semibold small"></label>
+                <select asp-for="DepartmentId" class="form-select" asp-items="ViewBag.DepartmentId" required></select>
+            </div>
+
+            <div class="col-md-6">
+                <label asp-for="SerialNumber" class="form-label fw-semibold small"></label>
+                <input asp-for="SerialNumber" class="form-control" placeholder="SN-OEM-88912" />
+            </div>
+
+            <div class="col-md-6">
+                <label asp-for="Criticality" class="form-label fw-semibold small"></label>
+                <select asp-for="Criticality" class="form-select" asp-items="Html.GetEnumSelectList<AssetCriticality>()"></select>
+            </div>
+
+            <div class="col-md-6">
+                <label asp-for="Status" class="form-label fw-semibold small"></label>
+                <select asp-for="Status" class="form-select" asp-items="Html.GetEnumSelectList<AssetStatus>()"></select>
+            </div>
+
+            <div class="col-md-6">
+                <label asp-for="PurchaseDate" class="form-label fw-semibold small"></label>
+                <input asp-for="PurchaseDate" type="date" class="form-control" required />
+            </div>
+
+            <div class="col-md-6">
+                <label asp-for="WarrantyExpiryDate" class="form-label fw-semibold small"></label>
+                <input asp-for="WarrantyExpiryDate" type="date" class="form-control" />
+            </div>
+
+            <div class="col-12">
+                <label asp-for="Description" class="form-label fw-semibold small"></label>
+                <textarea asp-for="Description" class="form-control" rows="3" placeholder="Provide equipment functional context and operating parameters..."></textarea>
+            </div>
+        </div>
+
+        <div class="d-flex justify-content-end gap-2 mt-4">
+            <a asp-action="Index" class="btn btn-outline-secondary">Cancel</a>
+            <button type="submit" class="btn btn-primary px-4"><i class="bi bi-check2-circle me-1"></i> Register Asset</button>
+        </div>
+    </form>
+</div>
