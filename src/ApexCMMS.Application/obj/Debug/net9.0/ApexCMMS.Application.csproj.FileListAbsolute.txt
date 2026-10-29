@@ -1,0 +1,16 @@
+D:\Anubhaw\Projects\Structure\ApexCMMS\src\ApexCMMS.Application\bin\Debug\net9.0\ApexCMMS.Application.deps.json
+D:\Anubhaw\Projects\Structure\ApexCMMS\src\ApexCMMS.Application\bin\Debug\net9.0\ApexCMMS.Application.dll
+D:\Anubhaw\Projects\Structure\ApexCMMS\src\ApexCMMS.Application\bin\Debug\net9.0\ApexCMMS.Application.pdb
+D:\Anubhaw\Projects\Structure\ApexCMMS\src\ApexCMMS.Application\bin\Debug\net9.0\ApexCMMS.Domain.dll
+D:\Anubhaw\Projects\Structure\ApexCMMS\src\ApexCMMS.Application\bin\Debug\net9.0\ApexCMMS.Domain.pdb
+D:\Anubhaw\Projects\Structure\ApexCMMS\src\ApexCMMS.Application\obj\Debug\net9.0\ApexCMMS.Application.csproj.AssemblyReference.cache
+D:\Anubhaw\Projects\Structure\ApexCMMS\src\ApexCMMS.Application\obj\Debug\net9.0\ApexCMMS.Application.GeneratedMSBuildEditorConfig.editorconfig
+D:\Anubhaw\Projects\Structure\ApexCMMS\src\ApexCMMS.Application\obj\Debug\net9.0\ApexCMMS.Application.AssemblyInfoInputs.cache
+D:\Anubhaw\Projects\Structure\ApexCMMS\src\ApexCMMS.Application\obj\Debug\net9.0\ApexCMMS.Application.AssemblyInfo.cs
+D:\Anubhaw\Projects\Structure\ApexCMMS\src\ApexCMMS.Application\obj\Debug\net9.0\ApexCMMS.Application.csproj.CoreCompileInputs.cache
+D:\Anubhaw\Projects\Structure\ApexCMMS\src\ApexCMMS.Application\obj\Debug\net9.0\ApexCMMS.Application.sourcelink.json
+D:\Anubhaw\Projects\Structure\ApexCMMS\src\ApexCMMS.Application\obj\Debug\net9.0\ApexCMMS.12DD1ED8.Up2Date
+D:\Anubhaw\Projects\Structure\ApexCMMS\src\ApexCMMS.Application\obj\Debug\net9.0\ApexCMMS.Application.dll
+D:\Anubhaw\Projects\Structure\ApexCMMS\src\ApexCMMS.Application\obj\Debug\net9.0\refint\ApexCMMS.Application.dll
+D:\Anubhaw\Projects\Structure\ApexCMMS\src\ApexCMMS.Application\obj\Debug\net9.0\ApexCMMS.Application.pdb
+D:\Anubhaw\Projects\Structure\ApexCMMS\src\ApexCMMS.Application\obj\Debug\net9.0\ref\ApexCMMS.Application.dll

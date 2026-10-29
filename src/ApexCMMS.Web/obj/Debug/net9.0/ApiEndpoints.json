@@ -1,0 +1,81 @@
+[
+  {
+    "ContainingType": "ApexCMMS.Web.Controllers.Api.AuthController",
+    "Method": "RefreshToken",
+    "RelativePath": "api/v1/auth/refresh",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "model",
+        "Type": "ApexCMMS.Application.DTOs.Auth.RefreshTokenRequestDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "ApexCMMS.Web.Controllers.Api.AuthController",
+    "Method": "RevokeToken",
+    "RelativePath": "api/v1/auth/revoke",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "refreshToken",
+        "Type": "System.String",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "ApexCMMS.Web.Controllers.Api.AuthController",
+    "Method": "GenerateToken",
+    "RelativePath": "api/v1/auth/token",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "model",
+        "Type": "ApexCMMS.Application.DTOs.Auth.LoginRequestDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "ApexCMMS.Web.Controllers.Api.TechnicianApiController",
+    "Method": "CompleteChecklistStep",
+    "RelativePath": "api/v1/technician/checklist/{id}/complete",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Guid",
+        "IsRequired": true
+      },
+      {
+        "Name": "notes",
+        "Type": "System.String",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "ApexCMMS.Web.Controllers.Api.TechnicianApiController",
+    "Method": "GetMyAssignedWorkOrders",
+    "RelativePath": "api/v1/technician/work-orders",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  }
+]

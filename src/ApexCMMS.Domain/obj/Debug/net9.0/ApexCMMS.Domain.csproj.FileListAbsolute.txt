@@ -1,0 +1,13 @@
+D:\Anubhaw\Projects\Structure\ApexCMMS\src\ApexCMMS.Domain\bin\Debug\net9.0\ApexCMMS.Domain.deps.json
+D:\Anubhaw\Projects\Structure\ApexCMMS\src\ApexCMMS.Domain\bin\Debug\net9.0\ApexCMMS.Domain.dll
+D:\Anubhaw\Projects\Structure\ApexCMMS\src\ApexCMMS.Domain\bin\Debug\net9.0\ApexCMMS.Domain.pdb
+D:\Anubhaw\Projects\Structure\ApexCMMS\src\ApexCMMS.Domain\obj\Debug\net9.0\ApexCMMS.Domain.csproj.AssemblyReference.cache
+D:\Anubhaw\Projects\Structure\ApexCMMS\src\ApexCMMS.Domain\obj\Debug\net9.0\ApexCMMS.Domain.GeneratedMSBuildEditorConfig.editorconfig
+D:\Anubhaw\Projects\Structure\ApexCMMS\src\ApexCMMS.Domain\obj\Debug\net9.0\ApexCMMS.Domain.AssemblyInfoInputs.cache
+D:\Anubhaw\Projects\Structure\ApexCMMS\src\ApexCMMS.Domain\obj\Debug\net9.0\ApexCMMS.Domain.AssemblyInfo.cs
+D:\Anubhaw\Projects\Structure\ApexCMMS\src\ApexCMMS.Domain\obj\Debug\net9.0\ApexCMMS.Domain.csproj.CoreCompileInputs.cache
+D:\Anubhaw\Projects\Structure\ApexCMMS\src\ApexCMMS.Domain\obj\Debug\net9.0\ApexCMMS.Domain.sourcelink.json
+D:\Anubhaw\Projects\Structure\ApexCMMS\src\ApexCMMS.Domain\obj\Debug\net9.0\ApexCMMS.Domain.dll
+D:\Anubhaw\Projects\Structure\ApexCMMS\src\ApexCMMS.Domain\obj\Debug\net9.0\refint\ApexCMMS.Domain.dll
+D:\Anubhaw\Projects\Structure\ApexCMMS\src\ApexCMMS.Domain\obj\Debug\net9.0\ApexCMMS.Domain.pdb
+D:\Anubhaw\Projects\Structure\ApexCMMS\src\ApexCMMS.Domain\obj\Debug\net9.0\ref\ApexCMMS.Domain.dll

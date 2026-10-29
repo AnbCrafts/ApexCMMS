@@ -1,5 +1,4 @@
 using System.Text;
-using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -27,20 +26,8 @@ builder.Services.AddSession(options =>
     options.Cookie.SameSite = SameSiteMode.Lax;
 });
 
-// 3. Configure Hybrid Authentication (Cookies for MVC UI + JWT Bearer for REST API)
-var jwtSecret = builder.Configuration["JwtSettings:Secret"] ?? "ApexCMMS_SuperSecretKey_ProductionGrade_2026_Minimum32CharsLong!@#$";
-var jwtIssuer = builder.Configuration["JwtSettings:Issuer"] ?? "ApexCMMS";
-var jwtAudience = builder.Configuration["JwtSettings:Audience"] ?? "ApexCMMS-FieldApp";
-var signingKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSecret));
-
-builder.Services.AddAuthentication(options =>
-{
-    // Default authentication scheme for Razor MVC
-    options.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-    options.DefaultChallengeScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-    options.DefaultSignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-})
-.AddCookie(CookieAuthenticationDefaults.AuthenticationScheme, options =>
+// 3. Configure Identity Application Cookie
+builder.Services.ConfigureApplicationCookie(options =>
 {
     options.Cookie.Name = ".ApexCMMS.Auth";
     options.LoginPath = "/Account/Login";
@@ -51,7 +38,15 @@ builder.Services.AddAuthentication(options =>
     options.Cookie.HttpOnly = true;
     options.Cookie.SameSite = SameSiteMode.Lax;
     options.Cookie.SecurePolicy = CookieSecurePolicy.SameAsRequest;
-})
+});
+
+// 4. Configure JWT Bearer for REST API Endpoints
+var jwtSecret = builder.Configuration["JwtSettings:Secret"] ?? "ApexCMMS_SuperSecretKey_ProductionGrade_2026_Minimum32CharsLong!@#$";
+var jwtIssuer = builder.Configuration["JwtSettings:Issuer"] ?? "ApexCMMS";
+var jwtAudience = builder.Configuration["JwtSettings:Audience"] ?? "ApexCMMS-FieldApp";
+var signingKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSecret));
+
+builder.Services.AddAuthentication()
 .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, options =>
 {
     options.RequireHttpsMetadata = false;
@@ -69,7 +64,7 @@ builder.Services.AddAuthentication(options =>
     };
 });
 
-// 4. Configure RBAC & Policy-Based Authorization
+// 5. Configure RBAC & Policy-Based Authorization
 builder.Services.AddAuthorization(options =>
 {
     options.AddPolicy("SuperAdminOnly", policy => policy.RequireRole("SuperAdmin"));
@@ -83,7 +78,7 @@ builder.Services.AddAuthorization(options =>
 
 builder.Services.AddScoped<IAuthorizationHandler, DepartmentAuthorizationHandler>();
 
-// 5. Anti-Forgery Token Configuration
+// 6. Anti-Forgery Token Configuration
 builder.Services.AddAntiforgery(options =>
 {
     options.HeaderName = "X-CSRF-TOKEN";
@@ -92,7 +87,7 @@ builder.Services.AddAntiforgery(options =>
     options.Cookie.SameSite = SameSiteMode.Strict;
 });
 
-// 6. Controllers and Views with Auto Anti-Forgery Validation
+// 7. Controllers and Views with Auto Anti-Forgery Validation
 builder.Services.AddControllersWithViews(options =>
 {
     options.Filters.Add(new Microsoft.AspNetCore.Mvc.AutoValidateAntiforgeryTokenAttribute());
@@ -100,7 +95,7 @@ builder.Services.AddControllersWithViews(options =>
 
 var app = builder.Build();
 
-// 7. Seed Database on Startup
+// 8. Seed Database on Startup
 using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
@@ -118,7 +113,7 @@ using (var scope = app.Services.CreateScope())
     }
 }
 
-// 8. HTTP Pipeline Configuration
+// 9. HTTP Pipeline Configuration
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
